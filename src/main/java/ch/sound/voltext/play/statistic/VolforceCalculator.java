@@ -45,17 +45,8 @@ public class VolforceCalculator {
 	public synchronized Map<LocalDate, BigDecimal> calculateByDate() {
 
 		Map<LocalDate, BigDecimal> vfPerDay = new TreeMap<>();
-		LocalDate firstDate = LocalDate.now();
 		
-		for (Song song : songData.getSongs()) {
-			for (PlayData playData : song.getPlays()) {
-				for (PlayLog play : playData.getPlaysLog()) {
-					if(play.getDate().toLocalDate().isBefore(firstDate)) {
-						firstDate = play.getDate().toLocalDate();
-					}
-				}
-			}
-		}
+		LocalDate firstDate = SongDataUtils.getFirstDate(songData).toLocalDate();
 		
 		while (firstDate.compareTo(LocalDate.now()) <= 0) {
 			List<FullPlayInformation> top50OnDate = getTopPlays(firstDate);
