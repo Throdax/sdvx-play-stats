@@ -192,7 +192,7 @@ public class VolforceCalculator {
 		}
 		
 		List<FullPlayInformation> sortedCopy = new ArrayList<>(volforceTopPlays);
-		Collections.sort(sortedCopy, new SongTitleComparator());
+		Collections.sort(sortedCopy, new FullSongTitleComparator());
 		
 		return Collections.unmodifiableList(sortedCopy);
 	}
@@ -206,6 +206,11 @@ public class VolforceCalculator {
 		Collections.sort(sortedCopy, new SongVolforceComparator());
 		
 		return Collections.unmodifiableList(sortedCopy);
+	}
+
+	public void calculateForSong(FullPlayInformation fullPlayInformation) {
+		
+		
 	}
 
 }

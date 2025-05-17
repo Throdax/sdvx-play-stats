@@ -2,12 +2,12 @@ package ch.sound.voltext.play.statistic;
 
 import java.util.Comparator;
 
-import ch.sound.voltext.play.model.Song;
+import ch.sound.voltext.play.model.FullPlayInformation;
 
-public class SongTitleComparator implements Comparator<Song> {
+public class FullSongTitleComparator implements Comparator<FullPlayInformation> {
 
 	@Override
-	public int compare(Song o1, Song o2) {
+	public int compare(FullPlayInformation o1, FullPlayInformation o2) {
 		
 		if(o1 == null) {
 			return 1;

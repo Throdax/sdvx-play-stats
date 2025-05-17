@@ -17,19 +17,24 @@ public class FullPlayInformation {
 	private int score;
 	private LocalDateTime playDate;
 	private BigDecimal volforce;
+	private BigDecimal normalizedVolforce;
 
 	private NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
 	public FullPlayInformation() {
 	}
-
-	public FullPlayInformation(String title, int rating, Difficulty difficulty, Lamp lamp, int score,
-			LocalDateTime playDate) {
+	
+	public FullPlayInformation(String title, int rating, Difficulty difficulty, Lamp lamp, int score) {
 		this.title = title;
 		this.rating = rating;
 		this.difficulty = difficulty;
 		this.lamp = lamp;
 		this.score = score;
+	}
+
+	public FullPlayInformation(String title, int rating, Difficulty difficulty, Lamp lamp, int score,
+			LocalDateTime playDate) {
+		this(title,rating,difficulty,lamp,score);
 		this.playDate = playDate;
 	}
 
@@ -50,7 +55,16 @@ public class FullPlayInformation {
 				rating * (score / 10_000_000f) * gradeCoefficient.floatValue() * clearCoefficient.floatValue() * 20)
 				.setScale(3, RoundingMode.DOWN);
 
+		normalizedVolforce = volforce.multiply(BigDecimal.valueOf(0.001)).setScale(3, RoundingMode.HALF_DOWN);
 		return volforce;
+	}
+
+	public BigDecimal getNormalizedVolforce() {
+		if(normalizedVolforce == null) {
+			calculateVolforce();
+		}
+		
+		return normalizedVolforce;
 	}
 
 	public BigDecimal getVolforce() {
