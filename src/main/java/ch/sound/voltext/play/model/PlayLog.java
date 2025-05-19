@@ -63,6 +63,7 @@ public class PlayLog {
 
 	public enum Grade {
 		// @formatter:off
+		NONE("",-1,-1),
 		D("D", 0, 6_499_499), 
 		C("C", 6_500_000, 7_499_999), 
 		B("B", 7_500_000, 8_699_999), 

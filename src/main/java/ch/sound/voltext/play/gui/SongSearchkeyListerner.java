@@ -9,8 +9,9 @@ import java.util.List;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
+
+import ch.sound.voltext.play.model.tree.PlayListTreeModel;
 
 public class SongSearchkeyListerner implements KeyListener {
 

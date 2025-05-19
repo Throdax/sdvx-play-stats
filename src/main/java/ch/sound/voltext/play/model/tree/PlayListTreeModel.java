@@ -1,8 +1,8 @@
-package ch.sound.voltext.play.gui;
+package ch.sound.voltext.play.model.tree;
 
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,29 +17,27 @@ import ch.sound.voltext.play.statistic.SongTitleComparator;
 
 public class PlayListTreeModel extends DefaultTreeModel {
 
-
 	private static final long serialVersionUID = -8914792811271866839L;
 	private DefaultMutableTreeNode root;
 	private Songlist songData;
-	
 
 	public PlayListTreeModel(DefaultMutableTreeNode root) {
 		super(root);
 		this.root = root;
 	}
-	
+
 	public PlayListTreeModel(DefaultMutableTreeNode root, Songlist songData) {
 		this(root);
 		this.songData = songData;
 	}
 
 	public PlayListTreeModel buildTreeModel() {
-		
+
 		root.removeAllChildren();
 
-		List<Song> sortedSongs = new ArrayList<>(songData.getSongs()); 
+		List<Song> sortedSongs = new ArrayList<>(songData.getSongs());
 		sortedSongs.sort(new SongTitleComparator());
-		
+
 		sortedSongs.forEach(song -> {
 			DefaultMutableTreeNode songNode = new DefaultMutableTreeNode(song.getTitle());
 
@@ -70,19 +68,36 @@ public class PlayListTreeModel extends DefaultTreeModel {
 
 					BigDecimal volforce = new FullPlayInformation(song.getTitle(), play.getRating(),
 							play.getDifficulty(), log.getLamp(), log.getScore()).getNormalizedVolforce();
-					
-					DefaultMutableTreeNode logNode = new DefaultMutableTreeNode(log.getFormatedScore() + " on "
-							+ log.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " with VF: ("
-							+ volforce.toString() + ")");
-					
+
+					PlayNode logNode = new PlayNode(log, volforce.toString());
+
 					lampNode.add(logNode);
 				});
 			});
 			root.add(songNode);
 		});
-		
+
 		return this;
-	
 	}
-	
+
+	public void removeNodes(Collection<DefaultMutableTreeNode> nodesToRemove) {
+		// Remove Plays
+		nodesToRemove.forEach(DefaultMutableTreeNode::removeFromParent);
+
+		// Remove Childless Lamps
+		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent()).filter(n -> n.getChildCount() == 0)
+				.forEach(DefaultMutableTreeNode::removeFromParent);
+
+		// Remove Childless Diff
+		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent())
+				.map(n -> (DefaultMutableTreeNode) n.getParent()).filter(n -> n.getChildCount() == 0)
+				.forEach(DefaultMutableTreeNode::removeFromParent);
+
+		// Remove Childless Titles
+		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent())
+				.map(n -> (DefaultMutableTreeNode) n.getParent()).map(n -> (DefaultMutableTreeNode) n.getParent())
+				.filter(n -> n.getChildCount() == 0).forEach(DefaultMutableTreeNode::removeFromParent);
+
+	}
+
 }

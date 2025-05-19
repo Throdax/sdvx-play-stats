@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.ResourceBundle;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -21,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -34,7 +36,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
@@ -45,13 +46,17 @@ import ch.sound.voltext.play.model.Difficulty;
 import ch.sound.voltext.play.model.Lamp;
 import ch.sound.voltext.play.model.PlayLog.Grade;
 import ch.sound.voltext.play.model.Songlist;
+import ch.sound.voltext.play.model.tree.PlayListTreeModel;
 import ch.sound.voltext.play.statistic.FileDAO;
 import ch.sound.voltext.play.statistic.PlayStatsCalculator;
 import ch.sound.voltext.play.statistic.SongDataUtils;
 import ch.sound.voltext.play.statistic.VolforceCalculator;
 import jakarta.xml.bind.JAXBException;
+import java.util.Locale;
 
 public class SoundVoltexStatsFrame extends JFrame {
+	
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("i18n/messages",Locale.ENGLISH); //$NON-NLS-1$
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -64,10 +69,10 @@ public class SoundVoltexStatsFrame extends JFrame {
 	private JPanel volforcePanel;
 	private JTextArea lampsTextArea;
 	private JTextField songSearchText;
-	private JButton quickFilterVFTop50;
-	private JButton quickFilterPUCButton;
-	private JButton quickFilterUCButton;
-	private JButton quickFilterHardButton;
+	private JToggleButton quickFilterVFTop50;
+	private JToggleButton quickFilterPUCButton;
+	private JToggleButton quickFilterUCButton;
+	private JToggleButton quickFilterHardButton;
 	private JComboBox<Grade> quickFilterGradeCombo;
 	private ChartPanel volforceChartPanel;
 
@@ -95,7 +100,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 	 */
 	public SoundVoltexStatsFrame() throws MalformedURLException, JAXBException {
 
-		setTitle("SoundVoltex Statistics Viewer");
+		setTitle(BUNDLE.getString("SoundVoltexStatsFrame.this.title")); //$NON-NLS-1$
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1317, 763);
 
@@ -134,13 +139,13 @@ public class SoundVoltexStatsFrame extends JFrame {
 		printRatingStatistics(playsCalculator);
 		printLampStatistics(playsCalculator);
 		printGradeStatistics(playsCalculator);
-		printVolforce(songData);
-		fillSongTree(songData);
+		VolforceCalculator volforceCalculator = drawVolforce(songData);
+		fillPlaysTree(songData,volforceCalculator);
 		
 
 	}
 
-	private void printVolforce(Songlist songData) {
+	private VolforceCalculator drawVolforce(Songlist songData) {
 		VolforceCalculator volforceCalculator = new VolforceCalculator(songData);
 		volforcePanel.setBorder(new TitledBorder("Volforce: "+volforceCalculator.calculateCurrent()));
 		
@@ -153,6 +158,8 @@ public class SoundVoltexStatsFrame extends JFrame {
 		((DateAxis) ((XYPlot)chart.getPlot()).getDomainAxis()).setDateFormatOverride(new SimpleDateFormat("yyyy-MM"));
 		volforceChartPanel.setChart(chart);
 		volforceChartPanel.updateUI();
+		
+		return volforceCalculator;
 	}
 
 	private void printDifficultyStatistics(PlayStatsCalculator playsCalculator) {
@@ -215,31 +222,37 @@ public class SoundVoltexStatsFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel songListLabel = new JLabel("Song List Location");
+		JLabel songListLabel = new JLabel(BUNDLE.getString("SoundVoltexStatsFrame.songListLabel.text")); //$NON-NLS-1$
+		songListLabel.setLocale(Locale.ENGLISH);
 		songListLabel.setBounds(10, 11, 92, 14);
 		contentPane.add(songListLabel);
 
 		songListLocationText = new JTextField();
+		songListLabel.setLabelFor(songListLocationText);
 		songListLocationText.setBounds(112, 8, 750, 20);
 		contentPane.add(songListLocationText);
 		songListLocationText.setColumns(10);
 
-		JButton browseSongListButton = new JButton("Browse...");
+		JButton browseSongListButton = new JButton(BUNDLE.getString("SoundVoltexStatsFrame.browseSongListButton.text")); //$NON-NLS-1$
+		browseSongListButton.setLocale(Locale.ENGLISH);
 		browseSongListButton.setBounds(872, 7, 89, 23);
 		browseSongListButton.addActionListener(new BrowseSongListAction(songListLocationText));
 		contentPane.add(browseSongListButton);
 
-		JButton loadSongListButton = new JButton("Load");
+		JButton loadSongListButton = new JButton(BUNDLE.getString("SoundVoltexStatsFrame.loadSongListButton.text")); //$NON-NLS-1$
+		loadSongListButton.setLocale(Locale.ENGLISH);
 		loadSongListButton.setBounds(971, 7, 89, 23);
 		loadSongListButton.addActionListener(evt -> loadSongList(evt));
 		contentPane.add(loadSongListButton);
 
-		JLabel overallPlayStatsLabel = new JLabel("Overal Stats:");
+		JLabel overallPlayStatsLabel = new JLabel(BUNDLE.getString("SoundVoltexStatsFrame.overallPlayStatsLabel.text")); //$NON-NLS-1$
+		overallPlayStatsLabel.setLocale(Locale.ENGLISH);
 		overallPlayStatsLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		overallPlayStatsLabel.setBounds(20, 50, 92, 20);
+		overallPlayStatsLabel.setBounds(10, 50, 102, 20);
 		contentPane.add(overallPlayStatsLabel);
 
 		overallPlayStatsText = new JLabel();
+		overallPlayStatsText.setLocale(Locale.ENGLISH);
 		overallPlayStatsText.setBackground(new Color(255, 255, 255));
 		overallPlayStatsText.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		overallPlayStatsText.setBounds(112, 50, 674, 20);
@@ -251,7 +264,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 
 		volforcePanel = new JPanel();
 		volforcePanel.setBounds(10, 289, 776, 424);
-		volforcePanel.setBorder(new TitledBorder("Volforce: "));
+		volforcePanel.setBorder(new TitledBorder(BUNDLE.getString("SoundVoltexStatsFrame.volforcePanel.borderTitle"))); //$NON-NLS-1$
 		contentPane.add(volforcePanel);
 		volforcePanel.setLayout(null);
 		
@@ -269,7 +282,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 		JPanel dificultyPanel = new JPanel();
 		dificultyPanel.setBounds(0, 11, 190, 188);
 		statsPanel.add(dificultyPanel);
-		dificultyPanel.setBorder(new TitledBorder("Difficultiess"));
+		dificultyPanel.setBorder(new TitledBorder(BUNDLE.getString("SoundVoltexStatsFrame.dificultyPanel.borderTitle"))); //$NON-NLS-1$
 		dificultyPanel.setLayout(null);
 
 		JScrollPane diffilcultyScrollPane = new JScrollPane();
@@ -284,7 +297,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 		JPanel ratingPanel = new JPanel();
 		ratingPanel.setBounds(194, 11, 190, 188);
 		statsPanel.add(ratingPanel);
-		ratingPanel.setBorder(new TitledBorder("Ratings"));
+		ratingPanel.setBorder(new TitledBorder(BUNDLE.getString("SoundVoltexStatsFrame.ratingPanel.borderTitle"))); //$NON-NLS-1$
 		ratingPanel.setLayout(null);
 
 		JScrollPane ratingsScrollPane = new JScrollPane();
@@ -299,7 +312,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 		JPanel lampPanel = new JPanel();
 		lampPanel.setBounds(385, 11, 190, 188);
 		statsPanel.add(lampPanel);
-		lampPanel.setBorder(new TitledBorder("Lamps"));
+		lampPanel.setBorder(new TitledBorder(BUNDLE.getString("SoundVoltexStatsFrame.lampPanel.borderTitle"))); //$NON-NLS-1$
 		lampPanel.setLayout(null);
 
 		JScrollPane lampScrollPane = new JScrollPane();
@@ -314,7 +327,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 		JPanel gradePanel = new JPanel();
 		gradePanel.setBounds(582, 11, 190, 188);
 		statsPanel.add(gradePanel);
-		gradePanel.setBorder(new TitledBorder("Grades"));
+		gradePanel.setBorder(new TitledBorder(BUNDLE.getString("SoundVoltexStatsFrame.gradePanel.borderTitle"))); //$NON-NLS-1$
 		gradePanel.setLayout(null);
 
 		JScrollPane gradesScrollPane = new JScrollPane();
@@ -328,7 +341,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 
 		JPanel playsListPanel = new JPanel();
 		playsListPanel.setBounds(794, 91, 500, 622);
-		playsListPanel.setBorder(new TitledBorder("Plays"));
+		playsListPanel.setBorder(new TitledBorder(BUNDLE.getString("SoundVoltexStatsFrame.playsListPanel.borderTitle"))); //$NON-NLS-1$
 		contentPane.add(playsListPanel);
 		playsListPanel.setLayout(null);
 
@@ -347,27 +360,33 @@ public class SoundVoltexStatsFrame extends JFrame {
 		songSearchText.setColumns(10);
 		
 		
-		JLabel lblNewLabel = new JLabel("Search Song:");
+		JLabel lblNewLabel = new JLabel(BUNDLE.getString("SoundVoltexStatsFrame.lblNewLabel.text")); //$NON-NLS-1$
+		lblNewLabel.setLocale(Locale.ENGLISH);
 		lblNewLabel.setBounds(929, 78, 64, 14);
 		contentPane.add(lblNewLabel);
 		
-		quickFilterHardButton = new JButton("HARD");
+		quickFilterHardButton = new JToggleButton(BUNDLE.getString("SoundVoltexStatsFrame.quickFilterHardButton.text")); //$NON-NLS-1$
+		quickFilterHardButton.setLocale(Locale.ENGLISH);
 		quickFilterHardButton.setBounds(1202, 51, 89, 23);
 		contentPane.add(quickFilterHardButton);
 		
-		quickFilterUCButton = new JButton("UC");
+		quickFilterUCButton = new JToggleButton(BUNDLE.getString("SoundVoltexStatsFrame.quickFilterUCButton.text")); //$NON-NLS-1$
+		quickFilterUCButton.setLocale(Locale.ENGLISH);
 		quickFilterUCButton.setBounds(1113, 51, 89, 23);
 		contentPane.add(quickFilterUCButton);
 		
-		quickFilterPUCButton = new JButton("PUC");
+		quickFilterPUCButton = new JToggleButton(BUNDLE.getString("SoundVoltexStatsFrame.quickFilterPUCButton.text")); //$NON-NLS-1$
+		quickFilterPUCButton.setLocale(Locale.ENGLISH);
 		quickFilterPUCButton.setBounds(1023, 51, 89, 23);
 		contentPane.add(quickFilterPUCButton);
 		
-		JLabel lblNewLabel_1 = new JLabel("Quick Filters:");
-		lblNewLabel_1.setBounds(796, 55, 64, 14);
-		contentPane.add(lblNewLabel_1);
+		JLabel quickFiltersLabel = new JLabel(BUNDLE.getString("SoundVoltexStatsFrame.lblNewLabel_1.text")); //$NON-NLS-1$
+		quickFiltersLabel.setLocale(Locale.ENGLISH);
+		quickFiltersLabel.setBounds(796, 55, 64, 14);
+		contentPane.add(quickFiltersLabel);
 		
-		quickFilterVFTop50 = new JButton("VF Top 50");
+		quickFilterVFTop50 = new JToggleButton(BUNDLE.getString("SoundVoltexStatsFrame.quickFilterVFTop50.text")); //$NON-NLS-1$
+		quickFilterVFTop50.setLocale(Locale.ENGLISH);
 		quickFilterVFTop50.setBounds(933, 51, 89, 23);
 		contentPane.add(quickFilterVFTop50);
 		
@@ -393,7 +412,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 		
 	}
 
-	private void fillSongTree(Songlist songData) {
+	private void fillPlaysTree(Songlist songData, VolforceCalculator volforceCalculator) {
 		PlayListTreeModel treeModel = new PlayListTreeModel(new DefaultMutableTreeNode("Songs"),songData);
 		treeModel.buildTreeModel();
 		
@@ -403,7 +422,7 @@ public class SoundVoltexStatsFrame extends JFrame {
 		quickFilterHardButton.addActionListener(new LampFilterAction(playsTree,treeModel,Lamp.EX_CLEAR));
 		quickFilterUCButton.addActionListener(new LampFilterAction(playsTree,treeModel,Lamp.UC));
 		quickFilterPUCButton.addActionListener(new LampFilterAction(playsTree,treeModel,Lamp.PUC));
-		quickFilterVFTop50.addActionListener(new VolforceFilterAction(playsTree,treeModel));
+		quickFilterVFTop50.addActionListener(new VolforceFilterAction(playsTree,treeModel,volforceCalculator));
 		quickFilterGradeCombo.addItemListener(new GradeFilterAction(playsTree,treeModel));
 	}
 }

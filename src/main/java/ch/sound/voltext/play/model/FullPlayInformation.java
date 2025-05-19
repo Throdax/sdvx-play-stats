@@ -53,9 +53,9 @@ public class FullPlayInformation {
 
 		volforce = new BigDecimal(
 				rating * (score / 10_000_000f) * gradeCoefficient.floatValue() * clearCoefficient.floatValue() * 20)
-				.setScale(3, RoundingMode.DOWN);
+				.setScale(0, RoundingMode.DOWN);
 
-		normalizedVolforce = volforce.multiply(BigDecimal.valueOf(0.001)).setScale(3, RoundingMode.HALF_DOWN);
+		normalizedVolforce = volforce.multiply(BigDecimal.valueOf(0.001)).setScale(3, RoundingMode.DOWN);
 		return volforce;
 	}
 

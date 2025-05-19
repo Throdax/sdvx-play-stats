@@ -28,4 +28,14 @@ public enum Difficulty {
 	public String getName() {
 		return name;
 	}
+	
+	public static Difficulty fromName(String name) {
+		for(Difficulty diff : Difficulty.values()) {
+			if(diff.getName().equalsIgnoreCase(name)) {
+				return diff;
+			}
+		}
+		
+		return null;
+	}
 }

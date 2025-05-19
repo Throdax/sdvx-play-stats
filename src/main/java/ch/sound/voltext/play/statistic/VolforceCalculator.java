@@ -36,11 +36,7 @@ public class VolforceCalculator {
 
 	}
 
-	private BigDecimal calculateFromTopVolforce(List<FullPlayInformation> top50) {
-		
-		return BigDecimal.valueOf(top50.stream().mapToDouble(play -> play.getVolforce().doubleValue()).sum() / 1000)
-				.setScale(3, RoundingMode.HALF_EVEN);
-	}
+
 	
 	public synchronized Map<LocalDate, BigDecimal> calculateByDate() {
 
@@ -163,6 +159,7 @@ public class VolforceCalculator {
 		case AAA -> new BigDecimal(1.00);
 		case AAA_PLUS -> new BigDecimal(1.02);
 		case S -> new BigDecimal(1.05);
+		default -> throw new IllegalArgumentException("Unexpected value: " + PlayLog.Grade.fromScore(score));
 		};
 	}
 
@@ -206,6 +203,12 @@ public class VolforceCalculator {
 		Collections.sort(sortedCopy, new SongVolforceComparator());
 		
 		return Collections.unmodifiableList(sortedCopy);
+	}
+	
+	private BigDecimal calculateFromTopVolforce(List<FullPlayInformation> top50) {
+		
+		return BigDecimal.valueOf(top50.stream().mapToDouble(play -> play.getVolforce().doubleValue()).sum() / 1000)
+				.setScale(3, RoundingMode.DOWN);
 	}
 
 	public void calculateForSong(FullPlayInformation fullPlayInformation) {
