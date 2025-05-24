@@ -46,6 +46,8 @@ public class LampFilterAction implements ActionListener {
 			}
 			
 			treeModel.removeNodes(nodesToRemove);
+			playsTree.setModel(treeModel);
+			playsTree.updateUI();
 		}
 
 	}
@@ -72,7 +74,7 @@ public class LampFilterAction implements ActionListener {
 			DefaultMutableTreeNode lampNode = (DefaultMutableTreeNode) difficuultyLevelNode.getChildAt(j);
 			
 			if(!lamp.getName().equalsIgnoreCase((String) lampNode.getUserObject())) {
-				nodesToRemove.add(titleNode);
+				nodesToRemove.add(lampNode);
 			}
 		}
 		

@@ -1,10 +1,14 @@
 package ch.sound.voltext.play.model.tree;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -83,21 +87,42 @@ public class PlayListTreeModel extends DefaultTreeModel {
 	public void removeNodes(Collection<DefaultMutableTreeNode> nodesToRemove) {
 		// Remove Plays
 		nodesToRemove.forEach(DefaultMutableTreeNode::removeFromParent);
+		
+		for(TreeNode titleNode : Collections.list(root.children())) { 
+			
+			// Remove Childless Titles
+			removeChildlessNodes(titleNode);
+		}
 
 		// Remove Childless Lamps
-		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent()).filter(n -> n.getChildCount() == 0)
-				.forEach(DefaultMutableTreeNode::removeFromParent);
+//		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent())
+//				.filter(n -> n != null && n.getChildCount() == 0).forEach(DefaultMutableTreeNode::removeFromParent);
+//
+//		// Remove Childless Diff
+//		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent()).filter(Predicate.not(Objects::isNull))
+//				.map(n -> (DefaultMutableTreeNode) n.getParent()).filter(n -> n != null && n.getChildCount() == 0)
+//				.forEach(DefaultMutableTreeNode::removeFromParent);
+//
+//
+//		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent()).filter(Predicate.not(Objects::isNull))
+//				.map(n -> (DefaultMutableTreeNode) n.getParent()).filter(Predicate.not(Objects::isNull))
+//				.map(n -> (DefaultMutableTreeNode) n.getParent()).filter(n -> n.getChildCount() == 0)
+//				.forEach(DefaultMutableTreeNode::removeFromParent);
 
-		// Remove Childless Diff
-		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent())
-				.map(n -> (DefaultMutableTreeNode) n.getParent()).filter(n -> n.getChildCount() == 0)
-				.forEach(DefaultMutableTreeNode::removeFromParent);
+	}
 
-		// Remove Childless Titles
-		nodesToRemove.stream().map(n -> (DefaultMutableTreeNode) n.getParent())
-				.map(n -> (DefaultMutableTreeNode) n.getParent()).map(n -> (DefaultMutableTreeNode) n.getParent())
-				.filter(n -> n.getChildCount() == 0).forEach(DefaultMutableTreeNode::removeFromParent);
-
+	private void removeChildlessNodes(TreeNode node) {
+		if(node.getChildCount() == 0) {
+			((DefaultMutableTreeNode) node).removeFromParent();
+		}
+		else {
+			for(TreeNode subNode : Collections.list(node.children())) {
+				removeChildlessNodes(subNode);
+			}
+			if(node.getChildCount() == 0) {
+				((DefaultMutableTreeNode) node).removeFromParent();
+			}
+		}
 	}
 
 }

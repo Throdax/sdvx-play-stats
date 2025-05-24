@@ -1,8 +1,11 @@
 package ch.sound.voltext.play;
 
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.util.Map;
 
 import ch.sound.voltext.play.model.Songlist;
 import ch.sound.voltext.play.statistic.FileDAO;
@@ -48,10 +51,10 @@ public class PlayStats {
 
 		System.out.println("\t"+"Volforce: " + volforceCalculator.calculateCurrent().toString());
 
-//		Map<LocalDate, BigDecimal> vfPerDay = volforceCalculator.calculateByDate();
+		Map<LocalDate, BigDecimal> vfPerDay = volforceCalculator.calculateByDate();
 
-//		vfPerDay.entrySet().stream()
-//				.forEach(e -> System.out.println(e.getKey().toString() + ": " + e.getValue().toString()));
+		vfPerDay.entrySet().stream()
+				.forEach(e -> System.out.println(e.getKey().toString() + ": " + e.getValue().toString()));
 	}
 
 }

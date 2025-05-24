@@ -418,11 +418,65 @@ public class SoundVoltexStatsFrame extends JFrame {
 		
 		playsTree.setModel(treeModel);
 		
+		createQuickFilters(volforceCalculator, treeModel);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void createQuickFilters(VolforceCalculator volforceCalculator, PlayListTreeModel treeModel) {
 		songSearchText.addKeyListener(new SongSearchkeyListerner(playsTree,treeModel));
 		quickFilterHardButton.addActionListener(new LampFilterAction(playsTree,treeModel,Lamp.EX_CLEAR));
+		quickFilterHardButton.addActionListener(e -> {
+			if(((JToggleButton)e.getSource()).isSelected()) {
+				quickFilterUCButton.setSelected(false);
+				quickFilterPUCButton.setSelected(false);
+				quickFilterVFTop50.setSelected(false);
+				quickFilterGradeCombo.setSelectedIndex(0);
+			}
+		});
+		
 		quickFilterUCButton.addActionListener(new LampFilterAction(playsTree,treeModel,Lamp.UC));
+		quickFilterUCButton.addActionListener(e -> {
+			if(((JToggleButton)e.getSource()).isSelected()) {
+				quickFilterHardButton.setSelected(false);
+				quickFilterPUCButton.setSelected(false);
+				quickFilterVFTop50.setSelected(false);
+				quickFilterGradeCombo.setSelectedIndex(0);
+			}
+		});
+		
+		
 		quickFilterPUCButton.addActionListener(new LampFilterAction(playsTree,treeModel,Lamp.PUC));
+		quickFilterPUCButton.addActionListener(e -> {
+			if(((JToggleButton)e.getSource()).isSelected()) {
+				quickFilterHardButton.setSelected(false);
+				quickFilterUCButton.setSelected(false);
+				quickFilterVFTop50.setSelected(false);
+				quickFilterGradeCombo.setSelectedIndex(0);
+			}
+		});
+		
 		quickFilterVFTop50.addActionListener(new VolforceFilterAction(playsTree,treeModel,volforceCalculator));
+		quickFilterVFTop50.addActionListener(e -> {
+			if(((JToggleButton)e.getSource()).isSelected()) {
+				quickFilterHardButton.setSelected(false);
+				quickFilterUCButton.setSelected(false);
+				quickFilterPUCButton.setSelected(false);
+				quickFilterGradeCombo.setSelectedIndex(0);
+			}
+		});
+		
+		
 		quickFilterGradeCombo.addItemListener(new GradeFilterAction(playsTree,treeModel));
+		quickFilterGradeCombo.addItemListener(e -> {
+			if(((JComboBox)e.getSource()).getSelectedIndex() > 0) {
+				quickFilterHardButton.setSelected(false);
+				quickFilterUCButton.setSelected(false);
+				quickFilterPUCButton.setSelected(false);
+				quickFilterVFTop50.setSelected(false);
+				
+			}
+		});
 	}
+	
+	
 }
