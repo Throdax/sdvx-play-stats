@@ -36,8 +36,6 @@ public class VolforceCalculator {
 
 	}
 
-
-	
 	public synchronized Map<LocalDate, BigDecimal> calculateByDate() {
 
 		Map<LocalDate, BigDecimal> vfPerDay = new TreeMap<>();
@@ -57,8 +55,6 @@ public class VolforceCalculator {
 		}
 		
 		return vfPerDay;
-		
-								
 	}
 
 	private List<FullPlayInformation> getTopPlays(LocalDate filterDate) {
@@ -73,11 +69,11 @@ public class VolforceCalculator {
 					
 					if(play.getDate().toLocalDate().compareTo(filterDate) <= 0) {
 
-					FullPlayInformation fullPlay = new FullPlayInformation(song.getTitle(), rating,
-							playData.getDifficulty(), play.getLamp(), play.getScore(), play.getDate());
-
-					play.setVolforce(fullPlay.calculateVolforce());
-					addToTopPlays(topPlaysOnDate, fullPlay);
+						FullPlayInformation fullPlay = new FullPlayInformation(song.getTitle(), rating,
+								playData.getDifficulty(), play.getLamp(), play.getScore(), play.getDate());
+	
+						play.setVolforce(fullPlay.calculateVolforce());
+						addToTopPlays(topPlaysOnDate, fullPlay);
 					}
 				}
 			}
@@ -169,6 +165,7 @@ public class VolforceCalculator {
 		case FAILED -> new BigDecimal(0.50);
 		case CLEAR -> new BigDecimal(1.00);
 		case EX_CLEAR -> new BigDecimal(1.02);
+		case EX_HARD_CLEAR -> new BigDecimal(1.04);
 		case UC -> new BigDecimal(1.05);
 		case PUC -> new BigDecimal(1.10);
 		};
@@ -212,6 +209,8 @@ public class VolforceCalculator {
 	}
 
 	public void calculateForSong(FullPlayInformation fullPlayInformation) {
+		
+		fullPlayInformation.calculateVolforce();
 		
 		
 	}

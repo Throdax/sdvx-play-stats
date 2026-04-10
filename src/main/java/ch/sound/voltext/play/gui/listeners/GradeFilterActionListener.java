@@ -1,4 +1,4 @@
-package ch.sound.voltext.play.gui;
+package ch.sound.voltext.play.gui.listeners;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -15,12 +15,12 @@ import ch.sound.voltext.play.model.PlayLog.Grade;
 import ch.sound.voltext.play.model.tree.PlayListTreeModel;
 import ch.sound.voltext.play.model.tree.PlayNode;
 
-public class GradeFilterAction implements ItemListener {
+public class GradeFilterActionListener implements ItemListener {
 
 	private JTree playsTree;
 	private PlayListTreeModel treeModel;
 
-	public GradeFilterAction(JTree playsTree, PlayListTreeModel treeModel) {
+	public GradeFilterActionListener(JTree playsTree, PlayListTreeModel treeModel) {
 		this.playsTree = playsTree;
 		this.treeModel = treeModel;
 	}
@@ -47,7 +47,7 @@ public class GradeFilterAction implements ItemListener {
 				nodesToRemove.addAll(iterateDificulty(selectedGrade, titleNode));
 			}
 
-			treeModel.removeNodes(nodesToRemove);
+			nodesToRemove.forEach(DefaultMutableTreeNode::removeFromParent);
 
 		}
 		playsTree.updateUI();

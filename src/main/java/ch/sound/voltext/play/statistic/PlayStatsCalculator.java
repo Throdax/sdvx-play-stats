@@ -1,7 +1,12 @@
 package ch.sound.voltext.play.statistic;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import ch.sound.voltext.play.model.Difficulty;
@@ -114,5 +119,36 @@ public class PlayStatsCalculator {
 		}
 
 		return gradeMap;
+	}
+
+	public Map<LocalDate, List<PlayLog>> getPlaysPerDay() {
+		if (songData == null) {
+			throw new IllegalArgumentException("Song data not loaded.");
+		}
+
+		Map<LocalDate, List<PlayLog>> byDateMap = new TreeMap<>((o1, o2) -> o1.compareTo(o2));
+
+		LocalDateTime firstDate = SongDataUtils.getFirstDate(songData);
+		LocalDate stopDate = LocalDate.now().plusDays(1);
+
+		for (LocalDate currentDate = firstDate.toLocalDate(); currentDate
+				.compareTo(stopDate) < 1; currentDate = currentDate.plusDays(1)) {
+
+			List<PlayLog> dateList = new ArrayList<>();
+
+			for (Song song : songData.getSongs()) {
+				for (PlayData data : song.getPlays()) {
+					for (PlayLog log : data.getPlaysLog()) {
+						if (log.getDate().toLocalDate().equals(currentDate)) {
+							dateList.add(log);
+						}
+					}
+				}
+			}
+
+			byDateMap.put(currentDate, dateList);
+		}
+
+		return byDateMap;
 	}
 }

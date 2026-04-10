@@ -16,6 +16,9 @@ public enum Lamp {
 	@XmlEnumValue("hard")
 	EX_CLEAR("EX Clear"),
 	
+	@XmlEnumValue("exh")
+	EX_HARD_CLEAR("EX Hard Clear"),
+	
 	@XmlEnumValue("uc")
 	UC("UC"),
 	
@@ -30,5 +33,15 @@ public enum Lamp {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public static Lamp fromName(String name) {
+		for(Lamp lamp : Lamp.values()) {
+			if(lamp.getName().equalsIgnoreCase(name)) {
+				return lamp;
+			}
+		}
+		
+		return null;
 	}
 }

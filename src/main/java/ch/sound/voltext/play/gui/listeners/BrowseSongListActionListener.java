@@ -1,4 +1,4 @@
-package ch.sound.voltext.play.gui;
+package ch.sound.voltext.play.gui.listeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,12 +8,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
-public class BrowseSongListAction implements ActionListener {
+public class BrowseSongListActionListener implements ActionListener {
 
 	private JTextField locationTextField;
 	private String lastFileLocation;
 
-	public BrowseSongListAction(JTextField locationTextField) {
+	public BrowseSongListActionListener(JTextField locationTextField) {
 		this.locationTextField = locationTextField;
 	}
 

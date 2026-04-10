@@ -1,4 +1,4 @@
-package ch.sound.voltext.play.gui;
+package ch.sound.voltext.play.gui.listeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,13 +19,14 @@ import ch.sound.voltext.play.model.tree.PlayListTreeModel;
 import ch.sound.voltext.play.model.tree.PlayNode;
 import ch.sound.voltext.play.statistic.VolforceCalculator;
 
-public class VolforceFilterAction implements ActionListener {
+public class VolforceFilterActionListener implements ActionListener {
 
 	private JTree playsTree;
 	private PlayListTreeModel treeModel;
 	private VolforceCalculator volforceCalculator;
 
-	public VolforceFilterAction(JTree playsTree, PlayListTreeModel treeModel, VolforceCalculator volforceCalculator) {
+	public VolforceFilterActionListener(JTree playsTree, PlayListTreeModel treeModel,
+			VolforceCalculator volforceCalculator) {
 		this.playsTree = playsTree;
 		this.treeModel = treeModel;
 		this.volforceCalculator = volforceCalculator;
@@ -49,17 +50,22 @@ public class VolforceFilterAction implements ActionListener {
 			while (it.hasNext()) {
 				DefaultMutableTreeNode titleNode = (DefaultMutableTreeNode) it.next();
 
+				// Finds the top level node with the same title
 				List<FullPlayInformation> topSubFilterr = topPlays.stream()
 						.filter(tp -> tp.getTitle().equalsIgnoreCase((String) titleNode.getUserObject()))
 						.collect(Collectors.toList());
 
-				nodesToRemove.addAll(iterateDificulty(topSubFilterr, titleNode));
+				if (topSubFilterr.isEmpty()) {
+					nodesToRemove.add(titleNode);
+				} else {
+					nodesToRemove.addAll(iterateDificulty(topSubFilterr, titleNode));
+				}
 
 			}
-
-			treeModel.removeNodes(nodesToRemove);
+			
+			nodesToRemove.forEach(DefaultMutableTreeNode::removeFromParent);
 		}
-		
+
 		playsTree.updateUI();
 	}
 
@@ -68,18 +74,23 @@ public class VolforceFilterAction implements ActionListener {
 
 		List<DefaultMutableTreeNode> nodesToRemove = new ArrayList<>();
 
+		// Find all dificulty - rating combo from the topPlay
 		for (int i = 0; i < titleNode.getChildCount(); i++) {
 			DefaultMutableTreeNode difficuultyLevelNode = (DefaultMutableTreeNode) titleNode.getChildAt(i);
 
-			String dificulty = ((String) difficuultyLevelNode.getUserObject()).split("-")[0].toString();
-			String rating = ((String) difficuultyLevelNode.getUserObject()).split("-")[0].toString();
+			String dificulty = ((String) difficuultyLevelNode.getUserObject()).split("-")[0].toString().trim();
+			String rating = ((String) difficuultyLevelNode.getUserObject()).split("-")[1].toString().trim();
 
 			List<FullPlayInformation> topSubFilterr = topPlays.stream()
 					.filter(tp -> tp.getDifficulty() == Difficulty.fromName(dificulty)
 							&& tp.getRating() == Integer.valueOf(rating))
 					.collect(Collectors.toList());
 
-			nodesToRemove.addAll(iterateLamp(topSubFilterr, titleNode, difficuultyLevelNode));
+			if (topSubFilterr.isEmpty()) {
+				nodesToRemove.add(difficuultyLevelNode);
+			} else {
+				nodesToRemove.addAll(iterateLamp(topSubFilterr, titleNode, difficuultyLevelNode));
+			}
 		}
 
 		return nodesToRemove;
@@ -92,12 +103,17 @@ public class VolforceFilterAction implements ActionListener {
 
 		for (int j = 0; j < difficuultyLevelNode.getChildCount(); j++) {
 			DefaultMutableTreeNode lampNode = (DefaultMutableTreeNode) difficuultyLevelNode.getChildAt(j);
-			
+
+			// Find all lamps with the same as the top play
 			List<FullPlayInformation> topSubFilterr = topPlays.stream()
-					.filter(tp -> tp.getLamp() == (Lamp)lampNode.getUserObject())
+					.filter(tp -> tp.getLamp() == Lamp.fromName((String) lampNode.getUserObject()))
 					.collect(Collectors.toList());
 
-			nodesToRemove.addAll(iteratePlay(topSubFilterr, titleNode, lampNode));
+			if (topSubFilterr.isEmpty()) {
+				nodesToRemove.add(lampNode);
+			} else {
+				nodesToRemove.addAll(iteratePlay(topSubFilterr, titleNode, lampNode));
+			}
 		}
 
 		return nodesToRemove;
@@ -108,10 +124,11 @@ public class VolforceFilterAction implements ActionListener {
 
 		List<DefaultMutableTreeNode> nodesToRemove = new ArrayList<>();
 
+		// Find the node with the different score than the top play, to be removed
 		for (int k = 0; k < lampNode.getChildCount(); k++) {
 			PlayNode playNode = (PlayNode) lampNode.getChildAt(k);
-			
-			for(FullPlayInformation topPlay : topPlays) {			
+
+			for (FullPlayInformation topPlay : topPlays) {
 				if (playNode.getLog().getScore() != topPlay.getScore()) {
 					nodesToRemove.add(playNode);
 				}

@@ -1,4 +1,4 @@
-package ch.sound.voltext.play.gui;
+package ch.sound.voltext.play.gui.listeners;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
