@@ -1,69 +1,51 @@
 package ch.sound.voltext.play.gui.listeners;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
+import javafx.event.EventHandler;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyEvent;
 
 import ch.sound.voltext.play.model.tree.PlayListTreeModel;
 
-public class SongSearchkeyListerner implements KeyListener {
+public class SongSearchkeyListerner implements EventHandler<KeyEvent> {
 
-	private JTree playsTree;
-	private PlayListTreeModel treeModel;
+    private final TreeView<Object> playsTree;
+    private final Supplier<PlayListTreeModel> modelSupplier;
 
-	public SongSearchkeyListerner(JTree playsTree, PlayListTreeModel treeModel) {
-		this.playsTree = playsTree;
-		this.treeModel = treeModel;
-	}
+    public SongSearchkeyListerner(TreeView<Object> playsTree, Supplier<PlayListTreeModel> modelSupplier) {
+        this.playsTree = playsTree;
+        this.modelSupplier = modelSupplier;
+    }
 
-	@Override
-	public void keyTyped(KeyEvent e) {
+    @Override
+    public void handle(KeyEvent event) {
+        TextField songSearchText = (TextField) event.getSource();
+        String text = songSearchText.getText();
 
-	}
+        if (text.length() < 3) {
+            playsTree.setRoot(modelSupplier.get().buildTreeItem());
+        } else {
+            String criteria = text;
+            TreeItem<Object> root = playsTree.getRoot();
 
-	@Override
-	public void keyPressed(KeyEvent e) {
+            List<TreeItem<Object>> nodesToRemove = new ArrayList<>();
+            for (TreeItem<Object> treeNode : new ArrayList<>(root.getChildren())) {
+                String nodeTitle = (String) treeNode.getValue();
+                if (!nodeTitle.contains(criteria)) {
+                    nodesToRemove.add(treeNode);
+                }
+            }
 
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		
-
-		JTextField songSearchText = (JTextField) e.getSource();
-		
-		if (songSearchText.getText().length() < 3) {
-			playsTree.setModel(treeModel.buildTreeModel());
-			
-		} else if (songSearchText.getText().length() >= 3) {
-
-			String criteria = songSearchText.getText();
-
-			DefaultMutableTreeNode root = (DefaultMutableTreeNode) playsTree.getModel().getRoot();
-
-			List<DefaultMutableTreeNode> nodesToRemove = new ArrayList<>();
-			Iterator<TreeNode> it = root.children().asIterator();
-			while (it.hasNext()) {
-				DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) it.next();
-				String nodeTitle = (String) treeNode.getUserObject();
-
-				if (!nodeTitle.contains(criteria)) {
-					nodesToRemove.add(treeNode);
-				}
-			}
-			
-			nodesToRemove.forEach(DefaultMutableTreeNode::removeFromParent);
-			
-		}
-		playsTree.updateUI();
-
-	}
-
+            nodesToRemove.forEach(node -> {
+                if (node.getParent() != null) {
+                    node.getParent().getChildren().remove(node);
+                }
+            });
+        }
+    }
 }

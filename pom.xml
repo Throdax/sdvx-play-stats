@@ -3,30 +3,204 @@
   <groupId>ch.sound.voltext</groupId>
   <artifactId>play.statistics</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  
-  <properties>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
-	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>4.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>4.0.5</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.5.5</version>
-		</dependency>
-	</dependencies>
-	
+  <properties>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21.0.5</javafx.version>
+    <main.class>ch.sound.voltext.play.SoundVoltexStatsApp</main.class>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>4.0.5</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.5.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+
+    <!--
+      Platform-specific JavaFX JARs that contain native libraries (.dll on Windows).
+      These must be listed explicitly so the shade plugin can bundle the native
+      code into the fat JAR.  Change the classifier to "linux" or "mac" when
+      building on those platforms.
+    -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-base</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>win</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-graphics</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>win</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>win</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>${javafx.version}</version>
+      <classifier>win</classifier>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+          <compilerArgs>
+            <arg>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${main.class}</mainClass>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+            </manifest>
+          </archive>
+          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>jpackage</id>
+            <!--<phase>verify</phase>-->
+            <phase>none</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>jpackage</executable>
+              <arguments>
+                <argument>--type</argument>
+                <argument>app-image</argument>
+                <argument>--input</argument>
+                <argument>${project.build.directory}/lib</argument>
+                <argument>--main-jar</argument>
+                <argument>${project.artifactId}-${project.version}.jar</argument>
+                <argument>--main-class</argument>
+                <argument>${main.class}</argument>
+                <argument>--name</argument>
+                <argument>SoundVoltexStats</argument>
+                <argument>--dest</argument>
+                <argument>${project.build.directory}/dist</argument>
+                <argument>--java-options</argument>
+                <argument>--add-opens=java.base/java.lang=ALL-UNNAMED</argument>
+                <argument>--java-options</argument>
+                <argument>--add-opens=java.base/java.util=ALL-UNNAMED</argument>
+                <argument>--java-options</argument>
+                <argument>--add-modules=javafx.controls,javafx.swing</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>fat-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- Output as a separate file so the thin JAR in target/lib/ is unchanged -->
+              <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <transformers>
+                <!-- Set Launcher (non-Application subclass) as Main-Class -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ch.sound.voltext.play.Launcher</mainClass>
+                </transformer>
+                <!-- Merge META-INF/services/* entries (needed for JAXB provider discovery) -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <!-- Drop JAR signatures that become invalid after repackaging -->
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <!-- Drop module descriptors to avoid split-package conflicts -->
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
