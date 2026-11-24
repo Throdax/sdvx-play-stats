@@ -1,0 +1,50 @@
+/* ===========================================================================
+   SOUND VOLTEX Play Statistics - what only this window has.
+
+   Loaded after css/theme.css and written against the same -ht-* colours, so
+   everything the two have to say about the same class is settled in favour of
+   this file while the colours themselves still come from the theme. The
+   controls, the tree, the tables and the captions are the theme's and are not
+   repeated here.
+   =========================================================================== */
+
+/* ── Titled frames ──
+   A group of controls fenced off by a border with its heading sitting on the
+   border itself. The heading is drawn on the window's own background, which is
+   what breaks the border behind it and leaves the heading reading as part of
+   the frame rather than as a label floating over it.
+   =========================================================================== */
+.titled-frame {
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+}
+
+.titled-frame-title {
+    -fx-background-color: -ht-bg0;
+    -fx-font-size: 11px;
+}
+
+/* ── The month of plays ──
+   A grid of days, each a cell that is filled in once something was played
+   that day. The cells are bordered individually rather than ruled as a table,
+   because a day is read on its own rather than along its row.
+   =========================================================================== */
+.days-panel {
+    -fx-background-color: -ht-bg1;
+}
+
+.day-header {
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-background-color: -ht-top-bar;
+    -fx-alignment: center;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ht-text-subtle;
+}
+
+.day-cell {
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-background-color: -ht-bg1;
+}

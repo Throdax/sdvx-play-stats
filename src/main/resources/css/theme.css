@@ -1,0 +1,903 @@
+/* ─────────────────────────────────────────────────────────
+   Shared look and feel of the home tools — "old" theme.
+
+   This file is one of a pair. Both themes answer the same list of selectors
+   and define the same list of colour tokens, so an application can be handed
+   either one without knowing which, and an application stylesheet written
+   against the tokens keeps working under both. Only the values differ:
+   this theme is the Windows 11 look, a near white window with a saturated
+   blue accent and raised buttons.
+
+   Nothing application specific belongs here. A rule that applies to one
+   window only — a row coloured by its category, a cell coloured by its
+   priority, a badge, a preview frame — lives in the application's own
+   stylesheet, which is loaded alongside this one and therefore wins on load
+   order where the two touch the same selector.
+   ───────────────────────────────────────────────────────── */
+
+/* ── Colour tokens ──
+   Declared on * rather than on .root so that a popup, which hangs off its
+   own scene and would never reach .root, still resolves them. */
+* {
+    -ht-bg0:           #f3f3f3;   /* window / root background  */
+    -ht-bg1:           #ffffff;   /* panel / card surface      */
+    -ht-bg2:           #ffffff;   /* input field background    */
+    -ht-bg-hover:      #e5e5e5;   /* hover state               */
+    -ht-bg-sel-row:    #cce4f7;   /* selected list / popup row */
+    -ht-bg-alt:        #f9f9f9;   /* alternating table row     */
+    -ht-bg-sub:        #f5f5f5;   /* sub-panel background      */
+    -ht-top-bar:       #e8e8e8;   /* header strip              */
+    -ht-border:        #d0d0d0;
+    -ht-border-input:  #8a8a8a;
+    -ht-text:          #1a1a1a;
+    -ht-text-subtle:   #5a5a5a;
+    -ht-text-inv:      #ffffff;
+    -ht-accent:        #0078d4;
+    -ht-accent-hover:  #106ebe;
+    -ht-accent-press:  #005a9e;
+    -ht-accent-soft:   #dceaf8;
+    -ht-danger:        #c42b1c;
+    -ht-danger-hover:  #a31e13;
+    -ht-success:       #1c6b3a;
+    -ht-warning:       #8a5200;
+
+    /* Colours a single row may redefine for itself. A row carrying a
+       category or a status overrides these three inline; every other row
+       keeps the values below, which repeat the ordinary surface colours.
+       They exist so that a row can be recoloured without an inline
+       background, which would outrank the selected and hover rules and hide
+       both states. */
+    -ht-row-bg:        #ffffff;
+    -ht-row-bg-alt:    #f9f9f9;
+    -ht-row-text:      #1a1a1a;
+    -ht-link:          #0066cc;
+}
+
+/* ── Root and surfaces ──
+   One family is named rather than a list of them. JavaFX reads the whole
+   value of -fx-font-family as a single family name, so a list in the manner
+   of a web stylesheet matches nothing and the window silently falls back to
+   the toolkit's own font, which is how Japanese text came to be drawn by
+   whatever substitute the system happened to pick. Every one of the home
+   tools ships this family beside its classes and hands it to the toolkit
+   before the first window is styled. */
+.root {
+    -fx-background-color: -ht-bg0;
+    -fx-font-family: "Noto Sans JP";
+    -fx-font-size: 13px;
+    -fx-text-fill: -ht-text;
+}
+
+.main-view {
+    -fx-background-color: -ht-bg0;
+}
+
+.panel {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+
+.sub-panel {
+    -fx-background-color: -ht-bg-sub;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* ── Header strip ──
+   .top-bar is the name of the strip itself; .header-area is the column that
+   stacks the strip and anything riding below it, such as a summary bar, and
+   carries the line that divides the pair from the body of the window. */
+.top-bar {
+    -fx-background-color: -ht-top-bar;
+    -fx-border-color: transparent transparent -ht-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.header-area {
+    -fx-background-color: -ht-top-bar;
+    -fx-border-color: transparent transparent -ht-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* A strip stacked inside .header-area already stands on the header colour and
+   draws the dividing line itself, so it asks for no background of its own. */
+.header-area > .top-bar {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.tool-bar-area {
+    -fx-background-color: transparent;
+}
+
+.tool-bar-area .label {
+    -fx-text-fill: -ht-text-subtle;
+}
+
+/* ── Summary strip ──
+   A row of derived numbers, each a small caption above a large figure. */
+.statistics-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: -ht-border transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.statistics-block {
+    -fx-background-color: transparent;
+}
+
+.statistics-caption {
+    -fx-text-fill: -ht-text-subtle;
+    -fx-font-size: 10.5px;
+}
+
+.statistics-value {
+    -fx-text-fill: -ht-text;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* ── Footer ── */
+.status-bar {
+    -fx-background-color: -ht-bg-sub;
+    -fx-text-fill: -ht-text-subtle;
+    -fx-font-size: 11px;
+    -fx-padding: 5 12 5 12;
+    -fx-border-color: -ht-border transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-max-width: infinity;
+}
+
+.status-bar .label {
+    -fx-text-fill: -ht-text-subtle;
+}
+
+/* ── Labels and text helpers ── */
+.label {
+    -fx-text-fill: -ht-text;
+}
+
+/* Heading that divides a form into sections. */
+.section-banner,
+.section-caption {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -ht-text-subtle;
+}
+
+/* Note printed under a field to explain it. */
+.field-note {
+    -fx-font-size: 11px;
+    -fx-text-fill: -ht-text-subtle;
+}
+
+.validation-message,
+.message-failure {
+    -fx-text-fill: -ht-danger;
+}
+
+.message-hint {
+    -fx-text-fill: -ht-text-subtle;
+}
+
+.message-success {
+    -fx-text-fill: -ht-success;
+}
+
+.message-warning {
+    -fx-text-fill: -ht-warning;
+}
+
+/* Segoe UI Symbol is named instead of the inherited font so that a warning
+   sign is drawn as a glyph in the colour above rather than substituted by a
+   colour emoji, which would ignore the fill entirely. One family is named,
+   for the reason given where the root font is set. */
+.message-symbol {
+    -fx-font-family: "Segoe UI Symbol";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* ══════════════════ BUTTONS ══════════════════ */
+
+.button {
+    -fx-cursor: hand;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 5 12 5 12;
+    -fx-font-size: 12px;
+    -fx-background-color: linear-gradient(to bottom, #fdfdfd, #f0f0f0);
+    -fx-text-fill: -ht-text;
+    -fx-border-color: -ht-border;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #e8f0fb, #dce8f8);
+    -fx-border-color: -ht-accent;
+}
+
+.button:pressed {
+    -fx-background-color: #ccddf5;
+    -fx-border-color: -ht-accent-press;
+}
+
+.button:focused {
+    -fx-border-color: -ht-accent;
+}
+
+/* The accented button of a form, whether it earned that place by being marked
+   the default or by being named the primary one. */
+.button:default,
+.primary-button {
+    -fx-background-color: -ht-accent;
+    -fx-text-fill: -ht-text-inv;
+    -fx-border-color: -ht-accent-press;
+    -fx-font-weight: bold;
+}
+
+.button:default:hover,
+.primary-button:hover {
+    -fx-background-color: -ht-accent-hover;
+    -fx-border-color: -ht-accent-press;
+}
+
+.button:default:pressed,
+.primary-button:pressed {
+    -fx-background-color: -ht-accent-press;
+}
+
+/* Button that destroys what it points at. */
+.btn-icon-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: -ht-danger;
+    -fx-border-color: -ht-danger;
+}
+
+.btn-icon-danger:hover {
+    -fx-background-color: #fce8e6;
+    -fx-text-fill: -ht-danger-hover;
+    -fx-border-color: -ht-danger-hover;
+}
+
+.btn-icon-danger:pressed {
+    -fx-background-color: #f7d4d0;
+    -fx-border-color: -ht-danger-hover;
+}
+
+/* ── Text inputs ── */
+.text-field {
+    -fx-background-color: -ht-bg2;
+    -fx-border-color: -ht-border-input;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-text-fill: -ht-text;
+    -fx-prompt-text-fill: -ht-text-subtle;
+    -fx-padding: 4 8 4 8;
+}
+
+.text-field:focused {
+    -fx-border-color: -ht-accent;
+    -fx-border-width: 1.5;
+}
+
+.text-area {
+    -fx-background-color: -ht-border;
+    -fx-border-color: -ht-border-input;
+    -fx-text-fill: -ht-text;
+}
+
+.text-area .content {
+    -fx-background-color: -ht-bg2;
+}
+
+.text-area:focused {
+    -fx-border-color: -ht-accent;
+}
+
+/* ── Pickers ── */
+.combo-box-base,
+.menu-button {
+    -fx-background-color: -ht-bg2;
+    -fx-border-color: -ht-border-input;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 2 4 2 4;
+}
+
+.combo-box-base:focused,
+.menu-button:focused {
+    -fx-border-color: -ht-accent;
+    -fx-border-width: 1.5;
+}
+
+/* A picker that can be typed into carries a text field inside its own
+   frame. Left as an ordinary field it would draw its own background, border
+   and corners inside the border of the picker, which reads as a box within a
+   box, and would light its border up on focus while the picker lit up its
+   own. The field therefore keeps only the text, and the picker around it
+   remains the one thing with an edge. */
+.combo-box-base > .text-field,
+.combo-box-base > .text-field:focused,
+.combo-box-base .combo-box-editor,
+.combo-box-base .combo-box-editor:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 2 4 2 4;
+}
+
+.combo-box-base .arrow-button,
+.menu-button .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 6 0 6;
+}
+
+.combo-box-base .arrow,
+.menu-button .arrow {
+    -fx-background-color: -ht-text-subtle;
+    -fx-padding: 3 4 3 4;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -ht-text;
+    -fx-padding: 2 4 2 4;
+}
+
+/* A drop down opened from inside a table resolves its colours against the
+   cell it belongs to, so a list opened on a selected row would otherwise
+   inherit that row's fills and offer an unreadable list. Every colour the
+   list stands on is therefore stated outright rather than left to be
+   inherited. */
+.combo-box-popup > .list-view {
+    -fx-background: -ht-bg1;
+    -fx-background-color: -ht-bg1;
+    -fx-text-background-color: -ht-text;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0, 0, 2);
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: -ht-bg1;
+    -fx-text-fill: -ht-text;
+    -fx-padding: 4 10 4 10;
+}
+
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: -ht-bg-hover;
+    -fx-text-fill: -ht-text;
+}
+
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: -ht-bg-sel-row;
+    -fx-text-fill: -ht-text;
+}
+
+.date-picker .text-field {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 6 0 6;
+}
+
+.date-picker-popup {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: -ht-border;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0, 0, 2);
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: -ht-top-bar;
+}
+
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: -ht-text-subtle;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: -ht-bg-hover;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: -ht-bg-sel-row;
+    -fx-text-fill: -ht-text;
+}
+
+/* ── Boxes ──
+   The size of a box is the padding of the box itself plus the padding of the
+   tick inside it, and the tick is a shape scaled to its own padding rather
+   than a glyph. The two are therefore set together: a tick as large as the
+   room inside the box reads as a filled square with a scratch on it rather
+   than as a tick, which is what a box drawn at the toolkit's own proportions
+   looks like at this size. */
+.check-box .box {
+    -fx-background-color: -ht-bg2;
+    -fx-border-color: -ht-border-input;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 2.5;
+}
+
+.check-box:selected .box {
+    -fx-background-color: -ht-accent;
+    -fx-border-color: -ht-accent;
+}
+
+.check-box .mark {
+    -fx-background-color: -ht-text-inv;
+    -fx-padding: 4;
+}
+
+.check-box .text {
+    -fx-text-fill: -ht-text;
+}
+
+.check-box:hover .box {
+    -fx-border-color: -ht-accent;
+}
+
+/* A box standing on its own, whose wording is the heading of its column or a
+   label of its form rather than text beside it, is read as a mark rather than
+   as something to tick, so it is grown to nearly the height a table row
+   leaves. It stays square by taking the room from the sides, where both a
+   column and a form are wider than the box needs. */
+.check-box-large .box {
+    -fx-padding: 3;
+}
+
+.check-box-large .mark {
+    -fx-padding: 7.5;
+}
+
+.radio-button .radio {
+    -fx-background-color: -ht-bg2;
+    -fx-border-color: -ht-border-input;
+    -fx-border-width: 1;
+    -fx-border-radius: 1em;
+    -fx-background-radius: 1em;
+    -fx-padding: 3;
+}
+
+.radio-button:selected .radio {
+    -fx-background-color: -ht-accent;
+    -fx-border-color: -ht-accent;
+}
+
+.radio-button .radio .dot {
+    -fx-background-insets: 0;
+    -fx-padding: 3;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: -ht-text-inv;
+}
+
+.radio-button .text {
+    -fx-text-fill: -ht-text;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: -ht-accent;
+}
+
+/* ── Menus and tooltips ── */
+.context-menu {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-padding: 3 0 3 0;
+}
+
+.context-menu .menu-item {
+    -fx-padding: 4 14 4 14;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: -ht-text;
+}
+
+.context-menu .menu-item:focused {
+    -fx-background-color: -ht-bg-sel-row;
+}
+
+.context-menu .menu-item:focused .label {
+    -fx-text-fill: -ht-text;
+}
+
+.context-menu .menu-item:disabled .label {
+    -fx-text-fill: -ht-text-subtle;
+    -fx-opacity: 0.6;
+}
+
+.separator .line {
+    -fx-border-color: -ht-border;
+}
+
+.tooltip {
+    -fx-background-color: -ht-bg1;
+    -fx-text-fill: -ht-text;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-font-size: 12px;
+}
+
+/* ── Scroll panes and bars ── */
+.scroll-pane {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: -ht-bg1;
+}
+
+.scroll-bar {
+    -fx-background-color: -ht-bg0;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #b0b0b0;
+    -fx-background-radius: 3;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #888888;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: -ht-text-subtle;
+    -fx-padding: 3;
+}
+
+/* ── Tabs ── */
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: -ht-top-bar;
+    -fx-border-color: transparent transparent -ht-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.tab-pane > .tab-header-area .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 6 16 6 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.tab-pane > .tab-header-area .tab:hover {
+    -fx-background-color: -ht-bg-hover;
+}
+
+.tab-pane > .tab-header-area .tab:selected {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: transparent transparent -ht-accent transparent;
+}
+
+.tab-pane > .tab-header-area .tab .tab-label {
+    -fx-text-fill: -ht-text-subtle;
+    -fx-font-size: 12px;
+}
+
+.tab-pane > .tab-header-area .tab:selected .tab-label {
+    -fx-text-fill: -ht-text;
+    -fx-font-weight: bold;
+}
+
+.tab-pane > .tab-content-area {
+    -fx-background-color: -ht-bg1;
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-color: transparent;
+}
+
+/* ══════════════════ TABLES ══════════════════ */
+
+.table-view {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-table-cell-border-color: -ht-border;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -ht-top-bar;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 28;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent transparent -ht-border transparent;
+}
+
+.table-view .column-header .label,
+.column-header-title {
+    -fx-text-fill: -ht-text-subtle;
+    -fx-alignment: center-left;
+    -fx-content-display: right;
+    -fx-graphic-text-gap: 4;
+    -fx-font-weight: bold;
+}
+
+/* Every row of every table is the same height, whether it holds plain text, a
+   picker, or a pair of buttons. Left to itself a row grows to fit the tallest
+   control in it, which would make one tab read as a different build of table
+   from the next; the height below is the one a row of plain text takes, and an
+   application that puts a control in a row trims it to sit inside that. */
+.table-view .table-row-cell {
+    -fx-cell-size: 28px;
+    -fx-background-color: -ht-row-bg;
+    -fx-text-fill: -ht-row-text;
+    -fx-border-color: transparent transparent -ht-border transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-font-size: 12px;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: -ht-row-bg-alt;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: -ht-bg-hover;
+}
+
+/* Selection is drawn around the row instead of over it, so a row coloured by
+   its own status or category still shows that colour while it is selected.
+   The ring is the row colour laid back over a wider layer of the accent, not
+   a real border: a border takes up room inside the row, and every cell would
+   shift by a pixel each time the selection moved.
+   The separator line every row draws along its bottom edge is painted on top
+   of that ring and would otherwise eat the lower half of it, leaving three
+   thick sides and one thin one, so on the selected row the line is drawn in
+   the accent colour and joins the ring instead of cutting into it. */
+.table-view .table-row-cell:selected {
+    -fx-background-color: -ht-accent, -ht-row-bg;
+    -fx-background-insets: 0, 2;
+    -fx-border-color: transparent transparent -ht-accent transparent;
+}
+
+.table-view .table-row-cell:odd:selected {
+    -fx-background-color: -ht-accent, -ht-row-bg-alt;
+    -fx-background-insets: 0, 2;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: -ht-row-text;
+    -fx-padding: 2 8 2 8;
+}
+
+/* A column of figures reads as a column when the digits line up on the right,
+   which is where the eye compares magnitudes. */
+.table-view .number-cell {
+    -fx-alignment: center-right;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: -ht-text-subtle;
+    -fx-font-size: 12px;
+}
+
+/* Editor a cell is replaced by while it is being typed into. */
+.cell-editor {
+    -fx-background-color: -ht-bg2;
+    -fx-border-color: -ht-accent;
+}
+
+/* Link drawn inside a cell. It takes the row's own text colour through
+   -ht-link, so a row recoloured by its category keeps a legible link. */
+.table-cell .hyperlink {
+    -fx-text-fill: -ht-link;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.table-cell .hyperlink:hover {
+    -fx-underline: true;
+}
+
+.table-cell .hyperlink:visited {
+    -fx-text-fill: -ht-link;
+}
+
+/* ── Column heading filters ──
+   The funnel offering the values of a column is drawn as a shape rather than
+   loaded as a picture so it can take the accent colour while the column is
+   filtered, which is often the only sign a tab gives that a heading is
+   holding rows back. It carries no background of its own until the pointer is
+   over it, so a heading reads as a heading rather than as a row of buttons,
+   and it is kept narrow because the columns it sits on were sized for their
+   text. */
+.filter-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 2 3 2 3;
+    -fx-background-radius: 2;
+    -fx-cursor: hand;
+    -fx-text-fill: -ht-text-subtle;
+    -fx-font-size: 9px;
+}
+
+.filter-button:hover {
+    -fx-background-color: -ht-accent-soft;
+    -fx-border-color: -ht-border;
+}
+
+.filter-button:pressed {
+    -fx-background-color: #ccddf5;
+}
+
+.filter-button .funnel {
+    -fx-shape: "M0 0 L10 0 L6 4.5 L6 9 L4 7.5 L4 4.5 Z";
+    -fx-background-color: -ht-text-subtle;
+    -fx-min-width: 9;
+    -fx-pref-width: 9;
+    -fx-max-width: 9;
+    -fx-min-height: 9;
+    -fx-pref-height: 9;
+    -fx-max-height: 9;
+}
+
+/* A heading that is holding rows back, named either way round because the two
+   applications mark it by a different class. */
+.filter-button.filtered .funnel,
+.filter-button-active .funnel {
+    -fx-background-color: -ht-accent;
+}
+
+.filter-button-active {
+    -fx-text-fill: -ht-accent;
+    -fx-background-color: -ht-accent-soft;
+    -fx-border-color: -ht-accent;
+}
+
+/* ── Popup panels ──
+   A panel dropped out of a table cell or a column header resolves both its
+   colours and its font against the node it was opened from, so a panel opened
+   by clicking a cell would otherwise inherit the colours of the row that
+   click just selected and the tiny font of the glyph button in the heading.
+   Each value these panels stand on is therefore stated outright rather than
+   derived. */
+.column-filter-popup,
+.selection-panel {
+    -fx-background: -ht-bg1;
+    -fx-background-color: -ht-bg1;
+    -fx-text-background-color: -ht-text;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+    -fx-font-size: 13px;
+}
+
+.column-filter-content {
+    -fx-background-color: -ht-bg1;
+}
+
+.column-filter-popup .label,
+.column-filter-popup .check-box,
+.column-filter-popup .check-box .text,
+.selection-panel .label,
+.selection-panel .check-box,
+.selection-panel .check-box .text {
+    -fx-text-fill: -ht-text;
+}
+
+/* The item holding such a panel is the only one in its menu, so it is
+   permanently focused. Left alone it would paint the bar of a highlighted
+   menu entry behind the whole panel. */
+.column-filter-popup .menu-item:focused,
+.selection-panel .menu-item:focused {
+    -fx-background-color: transparent;
+}
+
+.column-filter-popup .scroll-pane,
+.column-filter-popup .scroll-pane > .viewport,
+.selection-panel .scroll-pane,
+.selection-panel .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ── Dialogs ── */
+.dialog-pane {
+    -fx-background-color: -ht-bg0;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: -ht-text;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: -ht-top-bar;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: -ht-text;
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .button-bar .container {
+    -fx-padding: 8 12 8 12;
+}
+
+/* ── Lists and progress ── */
+.list-view {
+    -fx-background-color: -ht-bg1;
+    -fx-border-color: -ht-border;
+    -fx-border-width: 1;
+}
+
+.list-view .list-cell {
+    -fx-background-color: -ht-bg1;
+    -fx-text-fill: -ht-text;
+    -fx-padding: 4 8 4 8;
+}
+
+.list-view .list-cell:filled:hover {
+    -fx-background-color: -ht-bg-hover;
+}
+
+.list-view .list-cell:filled:selected {
+    -fx-background-color: -ht-bg-sel-row;
+    -fx-text-fill: -ht-text;
+}
+
+.progress-bar > .track {
+    -fx-background-color: -ht-top-bar;
+    -fx-border-color: -ht-border;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -ht-accent;
+    -fx-background-insets: 1px;
+}
+
+/* ── Disabled state ── */
+.button:disabled,
+.text-field:disabled,
+.text-area:disabled,
+.combo-box:disabled,
+.combo-box-base:disabled,
+.menu-button:disabled,
+.date-picker:disabled,
+.check-box:disabled,
+.radio-button:disabled,
+.table-view:disabled {
+    -fx-opacity: 0.5;
+    -fx-cursor: default;
+}

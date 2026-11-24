@@ -109,6 +109,7 @@ public class SoundVoltexStatsFrame {
 
         Pane contentPane = createComponents();
         Scene scene = new Scene(contentPane);
+        AppTheme.apply(scene);
         primaryStage.setScene(scene);
         primaryStage.setWidth(1317);
         primaryStage.setHeight(763);
@@ -456,7 +457,7 @@ public class SoundVoltexStatsFrame {
 
         volforcePanelTitle = new Label(
                 " " + BUNDLE.getString("SoundVoltexStatsFrame.volforcePanel.borderTitle") + " ");
-        volforcePanelTitle.setStyle("-fx-background-color: -fx-background;");
+        volforcePanelTitle.getStyleClass().add("titled-frame-title");
         volforcePanelTitle.setLayoutX(5);
         volforcePanelTitle.setLayoutY(2);
         volforcePaneContainer.getChildren().add(volforcePanelTitle);
@@ -626,10 +627,10 @@ public class SoundVoltexStatsFrame {
         borderPane.setLayoutY(y + 7);
         borderPane.setPrefWidth(w);
         borderPane.setPrefHeight(h - 7);
-        borderPane.setStyle("-fx-border-color: #888888; -fx-border-width: 1;");
+        borderPane.getStyleClass().add("titled-frame");
 
         Label titleLabel = new Label(" " + title + " ");
-        titleLabel.setStyle("-fx-background-color: -fx-background; -fx-font-size: 11px;");
+        titleLabel.getStyleClass().add("titled-frame-title");
         titleLabel.setLayoutX(x + 7);
         titleLabel.setLayoutY(y - 1);
 

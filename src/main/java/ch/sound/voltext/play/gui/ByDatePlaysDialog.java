@@ -15,8 +15,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -35,6 +33,7 @@ public class ByDatePlaysDialog {
 
         GridPane contentPane = buildContentPane();
         Scene scene = new Scene(contentPane);
+        AppTheme.apply(scene);
         stage.setScene(scene);
         stage.setWidth(640);
         stage.setHeight(480);
@@ -102,7 +101,6 @@ public class ByDatePlaysDialog {
 
         // --- Days grid (spans all 3 columns) ---
         GridPane daysPanel = buildDaysPanel();
-        daysPanel.setStyle("-fx-background-color: white;");
         GridPane.setColumnSpan(daysPanel, 3);
         GridPane.setHgrow(daysPanel, Priority.ALWAYS);
         GridPane.setVgrow(daysPanel, Priority.ALWAYS);
@@ -115,7 +113,7 @@ public class ByDatePlaysDialog {
 
     private GridPane buildDaysPanel() {
         GridPane daysPanel = new GridPane();
-        daysPanel.setStyle("-fx-background-color: white;");
+        daysPanel.getStyleClass().add("days-panel");
 
         // 7 equal columns (Mon–Sun), 6 rows (1 header + 5 week rows)
         for (int i = 0; i < 7; i++) {
@@ -140,11 +138,9 @@ public class ByDatePlaysDialog {
         String[] dayHeaders = {"M", "T", "W", "T", "F", "S", "S"};
         for (int x = 0; x < 7; x++) {
             Label header = new Label(dayHeaders[x]);
-            header.setFont(Font.font("Tahoma", FontWeight.BOLD, 11));
             header.setMaxWidth(Double.MAX_VALUE);
             header.setMaxHeight(Double.MAX_VALUE);
-            header.setStyle("-fx-border-color: black; -fx-border-width: 2; "
-                    + "-fx-alignment: center; -fx-background-color: white;");
+            header.getStyleClass().add("day-header");
             GridPane.setHalignment(header, HPos.CENTER);
             GridPane.setValignment(header, VPos.CENTER);
             GridPane.setHgrow(header, Priority.ALWAYS);
@@ -157,8 +153,7 @@ public class ByDatePlaysDialog {
         for (int y = 1; y <= 5; y++) {
             for (int x = 0; x < 7; x++) {
                 Pane dayPanel = new Pane();
-                dayPanel.setStyle("-fx-border-color: black; -fx-border-width: 1; "
-                        + "-fx-background-color: white;");
+                dayPanel.getStyleClass().add("day-cell");
                 dayPanel.setUserData(Integer.toString((x + 1) * y));
                 GridPane.setHgrow(dayPanel, Priority.ALWAYS);
                 GridPane.setVgrow(dayPanel, Priority.ALWAYS);
